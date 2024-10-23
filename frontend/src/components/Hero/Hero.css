@@ -1,0 +1,168 @@
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 120px 80px;
+  background-color: #f0f4f8;
+}
+
+.ip-image {
+  width: 350px;
+  height: 320px;
+  border-radius: 5px;
+}
+
+@media (max-width: 1024px) {
+  .ip-image {
+    width: 100vw;
+    height: 100%;
+    border-radius: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ip-image {
+    width: 100vw;
+    height: 100%;
+    border-radius: 5px;
+  }
+}
+
+.hero-content {
+  max-width: 53%;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: black;
+}
+
+.hero-title .highlight {
+  color: #007BFF;
+}
+
+.hero-description {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+}
+
+.cta-button,
+.cta-button-outline {
+  padding: 15px 25px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cta-button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+
+.cta-button-outline {
+  background-color: transparent;
+  color: #007BFF;
+  border: 2px solid #007BFF;
+}
+
+.cta-button-outline:hover {
+  background-color: #007BFF;
+  color: white;
+}
+
+.hero-image img {
+  width: 400px;
+  max-width: 100%;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .hero {
+    padding: 100px 50px;
+  }
+
+  .hero-title {
+    font-size: 40px;
+  }
+
+  .hero-description {
+    font-size: 16px;
+  }
+
+  .hero-image img {
+    width: 350px;
+  }
+}
+
+@media (max-width: 992px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 80px 30px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .button-group {
+    justify-content: center;
+  }
+
+  .hero-image img {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 32px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .cta-button,
+  .cta-button-outline {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .hero-image img {
+    width: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero {
+    padding: 60px 20px;
+  }
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero-image img {
+    width: 200px;
+  }
+}
