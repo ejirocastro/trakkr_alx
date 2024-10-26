@@ -1,0 +1,90 @@
+.features {
+  padding: 80px 30px;
+  background: linear-gradient(145deg, #E0E7FF, #F8FAFD);
+  /* Light gradient for a modern, sleek look */
+  background-size: cover;
+  border-radius: 20px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.features-title {
+  font-size: 36px;
+  margin-bottom: 60px;
+  color: #333;
+}
+
+.features-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feature-card {
+  width: 30%;
+  padding: 20px;
+  background: linear-gradient(145deg, #ffffff, #f0f4f8);
+  border-radius: 15px;
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+}
+
+.card-icon {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  /* Adjust as needed */
+  height: 40px;
+  /* Adjust as needed */
+  border-radius: 50%;
+  background: linear-gradient(145deg, #E0E7FF, #FFFFFF);
+  box-shadow: 0px 10px 20px rgba(0, 123, 255, 0.2);
+}
+
+.icon {
+  font-size: 40px;
+  /* Reduced from 80px */
+  color: #007BFF;
+  margin: 19px 8px 12px 10px;
+}
+
+
+.feature-card h3 {
+  font-size: 22px;
+  color: #007BFF;
+  margin-bottom: 15px;
+}
+
+.feature-card p {
+  font-size: 16px;
+  color: #555;
+}
+
+.feature-card:hover p {
+  color: #333;
+}
+
+@media (max-width: 1024px) {
+  .feature-card {
+    width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
