@@ -1,6 +1,5 @@
 import multer from "multer";
 import sharp from "sharp";
-import User from "./../models/userModel.js";
 import catchAsync from "./../utils/catchAsync.js";
 import AppError from "../errorHandlers/appError.js";
 import
@@ -10,7 +9,8 @@ import
   getOne,
   updateOne,
 } from "../services/GenericService.js";
-import Email from "../emails/email.js";
+import User from "../Models/userModels.js";
+import Email from "../emails/emails.js";
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) =>
@@ -92,8 +92,8 @@ export const updateMe = catchAsync(async (req, res, next) =>
   // const filteredBody = filterObj(req.body, "name", "email");
   // if (req.file) filteredBody.photo = req.file.filename;
 
-   // 2) Filtered out unwanted fields names that are not allowed to be updated
-   const filteredBody = filterObj(
+  // 2) Filtered out unwanted fields names that are not allowed to be updated
+  const filteredBody = filterObj(
     req.body,
     "name",
     "email",

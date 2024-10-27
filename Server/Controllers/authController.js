@@ -8,10 +8,10 @@ import
   refreshTokenOptions,
   sendToken,
 } from "../utils/sendToken.js";
-import User from "../models/userModel.js";
 import AppError from "../errorHandlers/appError.js";
-import Email from "../emails/email.js";
 import catchAsync from "../utils/catchAsync.js";
+import User from "../Models/userModels.js";
+import Email from "../emails/emails.js";
 
 // Create Email verification token
 export const createVerificationToken = (user) =>
