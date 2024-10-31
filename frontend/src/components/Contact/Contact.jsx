@@ -3,7 +3,8 @@ import './Contact.css';
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
-function Contact() {
+function Contact()
+{
   return (
     <section className="contact-section" id="contact">
       <div className="contact-header">
@@ -43,7 +44,7 @@ function Contact() {
           <input type="email" placeholder="Your Email" required />
           <textarea placeholder="Your Message" required></textarea>
           <motion.button
-            className="contact-button"
+            className="contact-button bg-gradient-to-b from-slate-900 via-slate-800 to-blue-900"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
