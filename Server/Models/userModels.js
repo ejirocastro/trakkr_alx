@@ -69,9 +69,6 @@ userSchema.pre("save", function (next)
 
 userSchema.pre(/^find/, function (next)
 {
-  //this points to the current query
-  // if (this.getOptons().role == "admin") return next();
-
   this.find({ active: { $ne: false } });
   next();
 });
