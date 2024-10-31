@@ -3,7 +3,6 @@
   background: linear-gradient(145deg, #E0E7FF, #F8FAFD);
   /* Light gradient for a modern, sleek look */
   background-size: cover;
-  border-radius: 20px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
