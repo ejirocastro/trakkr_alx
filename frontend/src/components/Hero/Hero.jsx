@@ -2,11 +2,12 @@ import React from 'react';
 import './Hero.css';
 import { motion } from 'framer-motion';
 import ipTracker from '../../assets/hero/ip-tracker.png'
+import { Link } from 'react-router-dom';
 
 function Hero()
 {
   return (
-    <section className="hero">
+    <section className="hero bg-gradient-to-b from-slate-900 via-slate-800 to-blue-900" id='hero'>
       <motion.div
         className="hero-content"
         initial={{ opacity: 0, y: -50 }}
@@ -21,10 +22,11 @@ function Hero()
         </p>
         <div className="button-group">
           <motion.button
-            className="cta-button"
+            className="cta-button !font-semibold bg-white text-blue-800 hover:bg-blue-900 "
             whileHover={{ scale: 1.1 }}
           >
-            Get Started
+            <Link to="/dashboard" className='hover:!text-white'> Get Started</Link>
+
           </motion.button>
           <motion.button
             className="cta-button-outline"
@@ -33,15 +35,6 @@ function Hero()
             Learn More
           </motion.button>
         </div>
-      </motion.div>
-
-      <motion.div
-        className="hero-image"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 1 }}
-      >
-        <img src={ipTracker} className='ip-image' alt="IP Tracking App" />
       </motion.div>
     </section>
   );
