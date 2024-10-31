@@ -1,32 +1,120 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
+import { authContext } from '../../context/AuthContext';
+import * as Yup from 'yup';
+import { BASE_URL } from '../../config';
+import PasswordForgot from '../../pages/PasswordForgot';
+import { HashLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
 
 function Login()
 {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSubmit = (e) =>
+    const [formErrors, setFormErrors] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
+    })
+
+    const navigate = useNavigate();
+    const { dispatch } = useContext(authContext);
+
+    const schema = Yup.object().shape({
+        email: Yup.string()
+            .email("Invalid email!")
+            .required("Please enter your email!"),
+        password: Yup.string().required("Please enter your password!").min(6)
+    });
+
+
+    const handleInputChange = e =>
     {
-        e.preventDefault();
-        // Handle login logic here
-        console.log('Login submitted', { email, password });
-    };
+        setFormData({ ...formData, [e.target.name]: e.target.value })
+    }
+
+    const handleSubmit = async e =>
+    {
+
+        e.preventDefault()
+        setLoading(true);
+
+        try
+        {
+            await schema.validate(formData, { abortEarly: false });
+
+            const res = await fetch(`${BASE_URL}/users/login`, {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await res.json();
+
+            if (res.ok)
+            {
+                dispatch({
+                    type: "LOGIN_SUCCESS",
+                    payload: {
+                        user: result.user,
+                        accessToken: result.accessToken,
+                    }
+                })
+                setLoading(false);
+
+                toast.success("Log in successful", { className: "toast-message" })
+                navigate("/");
+            }
+            else
+            {
+                // throw new Error(result.Error)
+                toast.error(result.message, { className: "toast-message" });
+                setLoading(false);
+                console.log(result);
+            }
+
+        }
+        catch (err)
+        {
+            if (err instanceof Yup.ValidationError)
+            {
+                const errors = {};
+                err.inner.forEach(e =>
+                {
+                    errors[e.path] = e.message;
+                });
+                setFormErrors(errors);
+            }
+            else
+            {
+                // toast.error(err.data.message);
+                console.log(err);
+            }
+            setLoading(false)
+        }
+
+    }
+
 
     return (
         <section className="login-section" id="login">
-            <div className="login-container">
+            <div className={`login-container`}>
                 <h2 className="login-title">Welcome Back</h2>
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="input-group">
                         <FaUser className="input-icon" />
                         <input
+                            name="email"
                             type="email"
                             placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={handleInputChange}
                             required
                         />
                     </div>
@@ -35,8 +123,10 @@ function Login()
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            name="password"
+                            minLength="8"
+                            value={formData.password}
+                            onChange={handleInputChange}
                             required
                         />
                         <button
@@ -47,10 +137,12 @@ function Login()
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
                     </div>
-                    <button type="submit" className="login-button">Log In</button>
+                    <button type="submit" className="login-button flex justify-center items-center">
+                        {loading ? <HashLoader size={35} color="#ffffff" /> : "Login"}
+                    </button>
                 </form>
                 <div className="login-footer">
-                    <a href="#forgot-password" className="forgot-password">Forgot Password?</a>
+                    <button className="forgot-password"><a href='/forgotpassword'>Forgot Password?</a></button>
                     <p>Don't have an account? <a href="/signup" className="signup-link">Sign Up</a></p>
                 </div>
             </div>

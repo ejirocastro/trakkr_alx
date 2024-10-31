@@ -1,71 +1,113 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import { authContext } from '../../context/AuthContext';
+import { BASE_URL } from '../../config';
+import { HashLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
 
 const SignUp = () =>
 {
     const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-    });
-    const [errors, setErrors] = useState({});
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      })
+
+    const [formErrors, setFormErrors] = useState({});
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) =>
+    const navigate = useNavigate()
+    const { dispatch } = useContext(authContext);
+
+
+    const schema = Yup.object().shape({
+        name: Yup.string().required("Please enter your name"),
+        email: Yup.string()
+            .email("Invalid email!")
+            .required("Please enter your email!"),
+        password: Yup.string().required("Please enter your password!").min(6),
+        confirmPassword: Yup.string()
+            .required("Please confirm Your password")
+            .oneOf([Yup.ref("password")], "Passwords must match"),
+    });
+
+    const handleInputChange = e =>
+        {
+          setFormData({ ...formData, [e.target.name]: e.target.value })
+        }
+
+
+
+    const handleSubmit = async e =>
     {
-        const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
 
-    const validateForm = () =>
-    {
-        let newErrors = {};
+        e.preventDefault()
+        setLoading(true);
 
-        if (!formData.username.trim())
+
+        try
         {
-            newErrors.username = 'Username is required';
+            await schema.validate(formData, { abortEarly: false });
+
+            const res = await fetch(`${BASE_URL}/users/verify-email`, {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await res.json();
+
+            if (res.ok)
+            {
+                dispatch({
+                    type: "ACTIVATE_USER",
+                    payload: {
+                        activationToken: result.verificationToken,
+                        activation_Code: result.activationCode
+                    }
+                })
+
+                console.log(result.activationCode)
+
+                setLoading(false);
+                // toast.success(result.message)
+                navigate("/verify");
+            }
+            else
+            {
+                toast.error(result.message, { className: "toast-message" });
+                setLoading(false);
+                console.log(result);
+            }
+        }
+        catch (err)
+        {
+            if (err instanceof Yup.ValidationError)
+            {
+                const errors = {};
+                err.inner.forEach(e =>
+                {
+                    errors[e.path] = e.message;
+                });
+                setFormErrors(errors);
+            }
+            else
+            {
+                toast.error(err.message);
+            }
+            setLoading(false)
         }
 
-        if (!formData.email.trim())
-        {
-            newErrors.email = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(formData.email))
-        {
-            newErrors.email = 'Email is invalid';
-        }
-
-        if (!formData.password)
-        {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 6)
-        {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        if (formData.password !== formData.confirmPassword)
-        {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e) =>
-    {
-        e.preventDefault();
-        if (validateForm())
-        {
-            console.log('Form submitted', formData);
-            // Handle form submission logic here
-        }
-    };
+    }
 
     return (
         <section className="login-section" id="login">
@@ -76,13 +118,13 @@ const SignUp = () =>
                         <FaUser className="input-icon" />
                         <input
                             type="text"
-                            name="username"
+                            name="name"
                             placeholder="Username"
-                            value={formData.username}
-                            onChange={handleChange}
+                            value={formData.name}
+                            onChange={handleInputChange}
                             required
                         />
-                        {errors.username && <span className="error-message">{errors.username}</span>}
+                        {formErrors.name && <span className="error-message">{formErrors.name}</span>}
                     </div>
                     <div className="input-group">
                         <FaUser className="input-icon" />
@@ -91,10 +133,10 @@ const SignUp = () =>
                             name="email"
                             placeholder="Email"
                             value={formData.email}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             required
                         />
-                        {errors.email && <span className="error-message">{errors.email}</span>}
+                        {formErrors.email && <span className="error-message">{formErrors.email}</span>}
                     </div>
                     <div className="input-group">
                         <FaLock className="input-icon" />
@@ -103,7 +145,7 @@ const SignUp = () =>
                             name="password"
                             placeholder="Password"
                             value={formData.password}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             required
                         />
                         <button
@@ -113,7 +155,7 @@ const SignUp = () =>
                         >
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
-                        {errors.password && <span className="error-message">{errors.password}</span>}
+                        {formErrors.password && <span className="error-message">{formErrors.password}</span>}
                     </div>
                     <div className="input-group">
                         <FaLock className="input-icon" />
@@ -122,7 +164,7 @@ const SignUp = () =>
                             name="confirmPassword"
                             placeholder="Confirm Password"
                             value={formData.confirmPassword}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             required
                         />
                         <button
@@ -132,9 +174,11 @@ const SignUp = () =>
                         >
                             {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
-                        {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                        {formErrors.confirmPassword && <span className="error-message">{formErrors.confirmPassword}</span>}
                     </div>
-                    <button type="submit" className="login-button">Sign Up</button>
+                    <button type="submit" className="login-button flex justify-center items-center">
+                        {loading ? <HashLoader size={35} color="#ffffff" /> : "Sign Up"}
+                    </button>
                 </form>
                 <div className="login-footer">
                     {/* <a href="#forgot-password" className="forgot-password">Forgot Password?</a> */}
