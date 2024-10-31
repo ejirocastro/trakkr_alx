@@ -111,6 +111,64 @@ export const signUp = catchAsync(async (req, res, next) =>
   sendToken(user, 201, res);
 });
 
+export const resend = catchAsync(async (req, res, next) =>
+{
+  // 1) Getting token and check of it's there
+  let verification_token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  )
+  {
+    verification_token = req.headers.authorization.split(" ")[1];
+  } else
+  {
+    verification_token = req.body.activation_token;
+  }
+
+  const { activation_Code } = req.body;
+
+  const newUser = jwt.verify(
+    verification_token,
+    process.env.VERIFY_EMAIL_SECRET
+  );
+
+  console.log(newUser)
+
+  if (newUser.activationCode != activation_Code)
+    return next(new AppError("Invalid token. Please try again", 401));
+
+  const { name, email, password, confirmPassword } = newUser.user;
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    passwordConfirm: confirmPassword,
+  });
+
+  const { verificationToken, activationCode } = createVerificationToken(user);
+
+  const data = {
+    user: { name: user.name },
+    activationCode
+  };
+
+  await new Email(user, data).activateRegistration();
+
+  res.status(201).json({
+    success: true,
+    message: `New code has been sent to: ${user.email} to activate your account!`,
+    activationCode,
+    verificationToken,
+  });
+
+  sendToken(user, 201, res);
+});
+
+
+
 //Log user in and send token
 export const login = catchAsync(async (req, res, next) =>
 {
@@ -248,10 +306,10 @@ export const forgotPassword = catchAsync(async (req, res, next) =>
     const data = {
       user: { name: user.name },
       resetToken,
-      // resetURL: `${process.env.CLIENT_URL}/reset-password/${resetToken}`,
-      resetURL: `${req.protocol}://${req.get(
-        'host'
-      )}/api/v1/users/reset-password/${resetToken}`
+      resetURL: `${process.env.CLIENT_URL_dev}/reset-password/${resetToken}`,
+      // resetURL: `${req.protocol}://${req.get(
+      //   'host'
+      // )}/api/v1/users/reset-password/${resetToken}`
     };
 
     console.log(data.resetURL);
